@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Music Info</title>
+        {{result.js}}
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+        <!-- Bootstrap core CSS -->
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
+        <!-- Material Design Bootstrap -->
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.5.0/css/mdb.min.css" rel="stylesheet">
+        <!-- JQuery -->
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <!-- Bootstrap tooltips -->
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.13.0/umd/popper.min.js"></script>
+        <!-- Bootstrap core JavaScript -->
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/js/bootstrap.min.js"></script>
+        <!-- MDB core JavaScript -->
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.5.0/js/mdb.min.js"></script>
+    </head>
+    <body>
+        <div class="container">
+            <!-- <form action="{{ url_for('result') }}" method = "POST">
+             <input type="text" name="expression" />
+            <input type="submit" value="Execute" />
+        
+          <div class="form-group">
+            <label for="Artist Name">Artist Name</label>
+            <input type="text" class="form-control" id="Arist" aria-describedby="artist" placeholder="Enter Artist" name="expression">
+            <small id="artist" class="form-text text-muted">Enter the name of the artist.</small>
+          </div>
+          <div class="form-group">
+            <label for="Song Name">Song Name</label>
+            <input type="text" class="form-control" id="Song" placeholder="Song Name">
+            </div>
+            <button type="submit" action="{{ url_for('handle_data') }}" class="btn btn-primary">Submit</button>
+        </form> -->
+
+        <form method=post action="">
+        <!-- <table>
+          {% for field in form %}
+            <tr>
+            <np>{{ field.name }}</td><td>{{ field }}</td>
+            </tr>
+          {% endfor %}
+        </table> -->
+
+        
+        {% for field in form %}
+        <div class="form-group">
+            <label for="{{ field.name }}"> {{ field.name }}</label>
+            {{ field }}
+        </div>
+        {% endfor %}
+       
+
+        <p><input type=submit value=Structure></form></p>
+       <!--  <form action = "http://localhost:5000/result" method = "POST">
+         <p>Name <input type = "text" name = "Name" /></p>
+         <p>Physics <input type = "text" name = "Physics" /></p>
+         <p>Chemistry <input type = "text" name = "chemistry" /></p>
+         <p>Maths <input type ="text" name = "Mathematics" /></p>
+         <p><input type = "submit" value = "submit" /></p>
+      </form> -->
+      <p>
+      {% if result != None %}
+      <div> {{ result }}</div>
+      {% endif %}
+      </p>
+
+      <div id="ui_feedback"> DEFAULT </div>
+      
+      <canvas id="video-canvas" width="600" height="450" style="background: #ddd;"></canvas>
+  <br/>
+  <button id="camera-button" onclick="TopCodes.startStopVideoScan('video-canvas')">Start / Stop</button>
+
+  <script src="{{ url_for('static', filename='topcodes.js') }}"></script>
+  <script>
+    //get relevant topcode current positions
+
+    TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
+    var json = JSON.parse(jsonString);
+    drawCodes(json.topcodes);
+  });
+
+    var other_map = ["55", "107", "31", "47", "103", "79", "61", "93", "87", "59", "121", "91","155", "115", "109"]
+    var initPosx = new Array(other_map.length).fill(0);
+    console.log(initPosx);
+
+    var map = {"103" :"Verse", "31":"Chorus", "47": "Bridge", "107":"Pre-Chorus", "55":"Intro",
+                "79":"Verse", "61":"Chorus", "93":"Chorus", "87": "Outro", "59":"Solo", "121":"Verse", "91":"Pre-Chorus", "155":"Bridge", "115":"Pre-Chorus", "109":"Pre-Chorus"}
+
+    var feedback = document.getElementById('ui_feedback');
+    function drawCodes(topcodes) {
+      var ctx = document.querySelector("#video-canvas").getContext('2d');
+      ctx.fillStyle = "rgba(255, 0, 0, 0.3)";
+      initPosx = new Array(other_map.length).fill(0);
+      for (i=0; i<topcodes.length; i++) {
+        ctx.beginPath();
+        ctx.arc(topcodes[i].x, topcodes[i].y, topcodes[i].radius, 0, Math.PI*2, true);
+        ctx.fill();
+        //console.log(topcodes[i].code);
+        
+        var d = document.getElementById('camera-button');
+        d.style.position = "absolute";      
+        
+
+        //get topcode position for relevant topcodes
+        getTopCodePositions(topcodes[i]);
+
+        //order the physical positions of the topcodes 
+        
+        //relocate images based on position of topcodes
+        // repositionImage(indexRealPos);
+
+        // displayInformationImage();
+
+      }
+      var output = order();
+      feedback.innerHTML = output; //feedback.text = output;
+      console.log(output);
+  }
+
+  function check_work(validation, user_input) {
+    // console.log(validation);
+    var valid = "valid";
+    idx_user = 0;
+    while(user_input[idx_user] == ""){
+      idx_user += 1;
+    }
+
+    for(idx = 0; idx < validation.length; idx++){
+      if (validation[idx] != user_input[idx_user]){
+        valid = "not valid"
+      }
+      if (idx_user < user_input.length - 1)
+        idx_user+=1;
+    }
+    return valid;
+  }
+  //return topcode order (arrangement)
+  function order(){
+    var orderedRealPos = initPosx.slice();
+    console.log("raw list");
+    console.log(initPosx);
+    orderedRealPos.sort();
+    console.log("ordered list");
+    console.log(orderedRealPos);
+    // console.log(initPosx)
+
+    var indexRealPos = new Array({{result|safe}}.length ).fill("");
+    // console.log(indexRealPos);
+    // for(k = 0; k < indexRealPos.length; k++){
+    //   // console.log(k);
+    var k = 0;
+    for (j = k; j < orderedRealPos.length; j++){
+      if (orderedRealPos[j] != 0 && k < indexRealPos.length){//&& initPosx[j] == orderedRealPos[k]){
+        idx = initPosx.indexOf(orderedRealPos[j]);
+        // console.log(other_map[j]);
+        indexRealPos[k] = map[other_map[idx]];
+        k += 1;
+      }
+      // }
+    }
+
+    console.log(indexRealPos)
+    isValid = check_work( {{ result|safe }} , indexRealPos);
+
+
+    // test.sort();
+    // console.log(test);
+
+    return isValid;//indexRealPos;
+  }
+
+
+
+  function getTopCodePositions(topCode){
+      switch (topCode.code){
+        case 55:
+          initPosx[0] = topCode.x + 100;
+          // console.log("The position of Topcode 55 in x-axis " + topCode.x);
+          // Images[0].style.visibility = 'visible';          
+          break;
+        case 107:
+          initPosx[1] = topCode.x + 100;
+          // console.log("The position of Topcode 107 in x-axis " + topCode.x);
+
+          // Images[1].style.visibility = 'visible';          
+          break;
+        case 31:
+          initPosx[2] = topCode.x + 100;
+          // console.log("The position of Topcode 31 in x-axis " + topCode.x);
+          // Images[2].style.visibility = 'visible';          
+          break;
+        case 47:
+          initPosx[3] = topCode.x + 100;
+          // console.log("The position of Topcode 47 in x-axis " + topCode.x);
+          // Images[3].style.visibility = 'visible';          
+          break;
+
+         // "79", "61", "93"
+        case 103:
+          initPosx[4] = topCode.x + 100;
+          // console.log("The position of Topcode 103 in x-axis " + topCode.x);
+          // Images[4].style.visibility = 'visible';          
+          break;      
+        case 79:
+          initPosx[5] = topCode.x + 100;
+          // console.log("The position of Topcode 103 in x-axis " + topCode.x);
+          // Images[4].style.visibility = 'visible';          
+          break;      
+        case 61:
+          initPosx[6] = topCode.x + 100;
+          // console.log("The position of Topcode 103 in x-axis " + topCode.x);
+          // Images[4].style.visibility = 'visible';          
+          break;      
+        case 93:
+          initPosx[7] = topCode.x + 100;        
+          break;
+        case 87:
+          initPosx[8] = topCode.x + 100;        
+          break; 
+        case 59:
+          initPosx[9] = topCode.x + 100;        
+          break; 
+        case 121:
+          initPosx[10] = topCode.x + 100;        
+          break; 
+        case 91:
+          initPosx[11] = topCode.x + 100;        
+          break; 
+        case 155:
+          initPosx[12] = topCode.x + 100;        
+          break; 
+        case 115:
+          initPosx[13] = topCode.x + 100;        
+          break; 
+        case 109:
+          initPosx[14] = topCode.x + 100;        
+          break;       
+        }
+         // "87", "59", "121", "91","155", "115", "109"
+  }
+
+
+  </script>
+
+      </div>
+       
+    </body>
+</html>

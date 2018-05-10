@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Music Info</title>
+        <script type = "text/javascript" src="{{ url_for('static', filename='topcodes.js') }}"></script>
+
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+        <!-- Bootstrap core CSS -->
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
+        <!-- Material Design Bootstrap -->
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.5.0/css/mdb.min.css" rel="stylesheet">
+        <!-- JQuery -->
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <!-- Bootstrap tooltips -->
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.13.0/umd/popper.min.js"></script>
+        <!-- Bootstrap core JavaScript -->
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/js/bootstrap.min.js"></script>
+        <!-- MDB core JavaScript -->
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.5.0/js/mdb.min.js"></script>
+
+
+    </head>
+    <body>
+        <div class="container">
+      
+      <h1> HI </h1>
+      {{ result }}
+  <canvas id="video-canvas" width="800" height="600" style="background: #ddd;"></canvas>
+  <br/>
+  <button id="camera-button" onclick="TopCodes.startStopVideoScan('video-canvas')">Start / Stop</button>
+
+  <script src="{{ url_for('static', filename='topcodes.js') }}"></script>
+  <script>
+    //get relevant topcode current positions
+
+    TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
+    var json = JSON.parse(jsonString);
+    drawCodes(json.topcodes);
+  });
+
+    var initPosx = [0, 0, 0, 0, 0];
+    var other_map = ["55", "107", "31", "47", "103"]
+
+    var map = {"103" :"Verse", "31":"Chorus", "47": "Bridge", "107":"Pre Chorus", "55":"Intro"}
+    function drawCodes(topcodes) {
+      var ctx = document.querySelector("#video-canvas").getContext('2d');
+      ctx.fillStyle = "rgba(255, 0, 0, 0.3)";
+      initPosx = [0, 0, 0, 0, 0];
+      for (i=0; i<topcodes.length; i++) {
+        ctx.beginPath();
+        ctx.arc(topcodes[i].x, topcodes[i].y, topcodes[i].radius, 0, Math.PI*2, true);
+        ctx.fill();
+        //console.log(topcodes[i].code);
+        
+        var d = document.getElementById('camera-button');
+        d.style.position = "absolute";      
+        
+
+        //get topcode position for relevant topcodes
+        getTopCodePositions(topcodes[i]);
+
+        //order the physical positions of the topcodes 
+        
+        //relocate images based on position of topcodes
+        // repositionImage(indexRealPos);
+
+        // displayInformationImage();
+
+      }
+      var indexRealPos = order();
+      console.log(indexRealPos);
+  }
+
+  //return topcode order (arrangement)
+  function order(){
+    var orderedRealPos = initPosx.slice();
+    console.log(initPosx);
+    // var test = initPosx;
+    orderedRealPos.sort();
+    console.log(orderedRealPos);
+
+    var indexRealPos = ["", "", "", "", ""];
+    for(k = 0; k < 5; k++){
+      for (j = 0; j < 5; j++){
+        if (initPosx[j] != 0 && initPosx[j] == orderedRealPos[k]){
+          console.log(other_map[j]);
+          indexRealPos[k] = map[other_map[j]];
+        }
+      }
+    }
+
+    // test.sort();
+    // console.log(test);
+
+    return indexRealPos;
+  }
+
+
+
+  function getTopCodePositions(topCode){
+      switch (topCode.code){
+        case 55:
+          initPosx[0] = topCode.x;
+          // console.log("The position of Topcode 55 in x-axis " + topCode.x);
+          // Images[0].style.visibility = 'visible';          
+          break;
+        case 107:
+          initPosx[1] = topCode.x;
+          // console.log("The position of Topcode 107 in x-axis " + topCode.x);
+
+          // Images[1].style.visibility = 'visible';          
+          break;
+        case 31:
+          initPosx[2] = topCode.x;
+          // console.log("The position of Topcode 31 in x-axis " + topCode.x);
+          // Images[2].style.visibility = 'visible';          
+          break;
+        case 47:
+          initPosx[3] = topCode.x;
+          // console.log("The position of Topcode 47 in x-axis " + topCode.x);
+          // Images[3].style.visibility = 'visible';          
+          break;
+        case 103:
+          initPosx[4] = topCode.x;
+          // console.log("The position of Topcode 103 in x-axis " + topCode.x);
+          // Images[4].style.visibility = 'visible';          
+          break;      
+        }
+  }
+
+
+  </script>
+  <!-- <div>
+    <div float="left">
+      <img id="firstimage" src="image_above.png" alt="Above Average Temperature" >
+      <p class="text1" p style="font-size:24px" left="50px" id="ExplainText">100,000 years ago ............ 90,000 .................... 80,000 ..................... 70,000 ............. 60,000 years ago</p>
+      </div>
+    <img id="secondimage" src="image_below.png" alt="Below Average Temperature" >    
+    <img id="thirdimage" src="image_volcano.png" alt="High Volcanic Activity" >    
+    <img id="fourthimage" src="image_pollen.png" alt="High Levels of Pollen" >
+    <img id="fifthimage" src="image_equal.png" alt="Temperature at Average Level" >
+
+    <img class="InfoImage" id="InfoImage1" src="infoimage_above.png" alt="Above Average Temperature" >
+    <img class="InfoImage" id="InfoImage2" src="infoimage_below.png" alt="Below Average Temperature" >
+    <img class="InfoImage" id="InfoImage3" src="infoimage_volcano.png" alt="High Volcanic Activity" >
+    <img class="InfoImage" id="InfoImage4" src="infoimage_pollen.png" alt="High Levels of Pollen" >
+    <img class="InfoImage" id="InfoImage5" src="infoimage_equal.png" alt="Temperature at Average Level" >
+    </div>
+
+    <div>
+    <p style="font-size:160px">?   
+    </div>
+    <div>
+    <p style="font-size:36px">What do ice cores tell us about changes in temperature over time?   
+  </div>
+
+
+  <script src="{{ url_for('static', filename='topcodes.js') }}"></script>
+
+  <script>
+
+  TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
+    var json = JSON.parse(jsonString);
+    drawCodes(json.topcodes);
+  });
+
+
+
+  var Images = [
+                document.getElementById('firstslot'), 
+                document.getElementById('secondslot'),
+                document.getElementById('thirdslot'),
+                document.getElementById('fourthslot'),
+                document.getElementById('fifthslot'),
+                  ];
+
+  var InfoImages = [
+                "Verse",
+                "Chorus",
+                "Pre-Chorus"
+                  ];                  
+
+
+  var initPosx = [ 0, 0, 0, 0, 0];
+  var finalPosx = [800, 600, 400, 200, 0];
+
+
+  var InfoImagePos = 4;
+  var InfoImageIndex = 0;
+
+
+//set absolute positioning for images 
+  for (i=0; i < 5; i++){
+    Images[i].style.position = "absolute";
+    Images[i].style.visibility = "hidden";
+  }
+
+  function drawCodes(topcodes) {
+    var ctx = document.querySelector("#video-canvas").getContext('2d');
+    ctx.fillStyle = "rgba(255, 0, 0, 0.3)";
+    for (i=0; i<topcodes.length; i++) {
+      ctx.beginPath();
+      ctx.arc(topcodes[i].x, topcodes[i].y, topcodes[i].radius, 0, Math.PI*2, true);
+      ctx.fill();
+      //console.log(topcodes[i].code);
+      
+      var d = document.getElementById('camera-button');
+      d.style.position = "absolute";      
+      
+
+      //get topcode position for relevant topcodes
+      getTopCodePositions(topcodes[i]);
+
+      //order the physical positions of the topcodes 
+      var indexRealPos = order();
+
+      //relocate images based on position of topcodes
+      repositionImage(indexRealPos);
+
+      displayInformationImage();
+
+    }
+  }
+
+  //get relevant topcode current positions
+  function getTopCodePositions(topCode){
+      switch (topCode.code){
+        case 55:
+          initPosx[0] = topCode.y;
+          console.log("The position of Topcode 55 in y-axis " + topCode.y);
+          Images[0].style.visibility = 'visible';          
+          break;
+        case 61:
+          initPosx[1] = topCode.y;
+          Images[1].style.visibility = 'visible';          
+          break;
+        case 47:
+          initPosx[2] = topCode.y;
+          Images[2].style.visibility = 'visible';          
+          break;
+        case 59:
+          initPosx[3] = topCode.y;
+          Images[3].style.visibility = 'visible';          
+          break;
+        case 31:
+          initPosx[4] = topCode.y;
+          Images[4].style.visibility = 'visible';          
+          break;      }
+  }
+
+
+  //return topcode order (arrangement)
+  function order(){
+    var orderedRealPos = initPosx.slice();
+    orderedRealPos.sort();
+    var indexRealPos = [200, 200, 200, 200, 200];
+    for(k = 0; k < 5; k++){
+      for (j = 0; j < 5; j++){
+        if (initPosx[j] != 0 && initPosx[j] == orderedRealPos[k]){
+          indexRealPos[j] = k;
+        }
+      }
+    }
+
+    console.log(indexRealPos);
+    return indexRealPos;
+  }
+  //reposition image based on position of topcodes
+  function repositionImage(indexRealPos){
+      InfoImagePos = Math.min.apply(null, indexRealPos);
+      InfoImageIndex = 0;
+      for(l = 0; l < 5; l++){
+
+        if (indexRealPos[l] == InfoImagePos)
+            InfoImageIndex = l;
+
+          switch (indexRealPos[l]){
+          case 0:
+            //place in first position
+            Images[l].style.left = finalPosx[0] + 'px';
+            break;
+          case 1:
+            //place in second position
+            Images[l].style.left = finalPosx[1] + 'px';
+            break;
+          case 2:
+            //place in third position
+            Images[l].style.left = finalPosx[2] + 'px';
+            break;
+          case 3:
+            //place in forth position
+            Images[l].style.left = finalPosx[3] + 'px';
+            break;
+          case 4:
+            //place in forth position
+            Images[l].style.left = finalPosx[4] + 'px';
+            break;
+
+        }
+
+      }  
+  }
+
+
+  function displayInformationImage() {
+    // body...
+        for (p = 0; p < 5; p++){
+          if(p == InfoImageIndex){
+              InfoImages[p].style.visibility = 'visible';
+          }else{
+              InfoImages[p].style.visibility = 'hidden';
+
+          }
+        }
+  }
+</script> -->
+
+
+</div>
+       
+    </body>
+</html>
