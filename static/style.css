@@ -1,0 +1,62 @@
+html {
+    font-size: 1vw;
+    font: caption;
+}
+
+body {
+  width: 100vw;
+  height: 100vh;
+  background: white;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+header {
+  width: 100vw;
+
+  padding: 25px 0 25px 0;
+  text-align: center;
+}
+
+header h1 {
+  font-weight: bold;
+  font-size: 10rem;
+}
+
+.container {
+  width: 100vw;
+  padding: 0;
+  margin: auto;
+}
+
+.container .song-input {
+   width: 70vw;
+   margin: auto;
+}
+
+.container .song-input .content {
+  margin: auto;
+  display: flex;
+  justify-content: space-between;
+}
+
+.container .song-input .content .form-group {
+  display: inline-flex;
+  width: 49.5%;
+  flex-direction: column;
+}
+
+.container .song-input .form-group label {
+  margin: 0;
+  font-weight: 400;
+}
+
+.container .song-input .form-group input {
+  font-size: 3rem;
+  background: black;
+  color: white;
+  border: 1px solid black;
+  padding: 5px; 
+}

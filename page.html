@@ -1,143 +1,149 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Music Info</title>
-        <script type = "text/javascript" src="{{ url_for('static', filename='topcodes.js') }}"></script>
+
+<head>
+  <title>Music Info</title>
+  <script type="text/javascript" src="{{ url_for('static', filename='topcodes.js') }}"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"">
+        <link rel="
+    stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <!-- Bootstrap core CSS -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Material Design Bootstrap -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.5.0/css/mdb.min.css" rel="stylesheet">
+  <!-- JQuery -->
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <!-- Bootstrap tooltips -->
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.13.0/umd/popper.min.js"></script>
+  <!-- Bootstrap core JavaScript -->
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/js/bootstrap.min.js"></script>
+  <!-- MDB core JavaScript -->
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.5.0/js/mdb.min.js"></script>
+  <!-- Style Sheet -->
+  <link rel="stylesheet" type="text/css" href="static/style.css">
+</head>
+
+<body>
+  <header>
+    UHH
+  </header>
+  <div class="container">
+
+    <h1> HI </h1>
+    
+    {{ result }}
+
+    <canvas id="video-canvas" width="800" height="600" style="background: #ddd;"></canvas>
+    <br />
+    <button id="camera-button" onclick="TopCodes.startStopVideoScan('video-canvas')">Start / Stop</button>
+
+    <script src="{{ url_for('static', filename='topcodes.js') }}"></script>
+    <script>
+      //get relevant topcode current positions
+
+      TopCodes.setVideoFrameCallback("video-canvas", function (jsonString) {
+        var json = JSON.parse(jsonString);
+        drawCodes(json.topcodes);
+      });
+
+      var initPosx = [0, 0, 0, 0, 0];
+      var other_map = ["55", "107", "31", "47", "103"]
+
+      var map = { "103": "Verse", "31": "Chorus", "47": "Bridge", "107": "Pre Chorus", "55": "Intro" }
+      function drawCodes(topcodes) {
+        var ctx = document.querySelector("#video-canvas").getContext('2d');
+        ctx.fillStyle = "rgba(255, 0, 0, 0.3)";
+        initPosx = [0, 0, 0, 0, 0];
+        for (i = 0; i < topcodes.length; i++) {
+          ctx.beginPath();
+          ctx.arc(topcodes[i].x, topcodes[i].y, topcodes[i].radius, 0, Math.PI * 2, true);
+          ctx.fill();
+          //console.log(topcodes[i].code);
+
+          var d = document.getElementById('camera-button');
+          d.style.position = "absolute";
 
 
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"">
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-        <!-- Bootstrap core CSS -->
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
-        <!-- Material Design Bootstrap -->
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.5.0/css/mdb.min.css" rel="stylesheet">
-        <!-- JQuery -->
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-        <!-- Bootstrap tooltips -->
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.13.0/umd/popper.min.js"></script>
-        <!-- Bootstrap core JavaScript -->
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/js/bootstrap.min.js"></script>
-        <!-- MDB core JavaScript -->
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.5.0/js/mdb.min.js"></script>
+          //get topcode position for relevant topcodes
+          getTopCodePositions(topcodes[i]);
 
+          //order the physical positions of the topcodes 
 
-    </head>
-    <body>
-        <div class="container">
-      
-      <h1> HI </h1>
-      {{ result }}
-  <canvas id="video-canvas" width="800" height="600" style="background: #ddd;"></canvas>
-  <br/>
-  <button id="camera-button" onclick="TopCodes.startStopVideoScan('video-canvas')">Start / Stop</button>
+          //relocate images based on position of topcodes
+          // repositionImage(indexRealPos);
 
-  <script src="{{ url_for('static', filename='topcodes.js') }}"></script>
-  <script>
-    //get relevant topcode current positions
+          // displayInformationImage();
 
-    TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
-    var json = JSON.parse(jsonString);
-    drawCodes(json.topcodes);
-  });
-
-    var initPosx = [0, 0, 0, 0, 0];
-    var other_map = ["55", "107", "31", "47", "103"]
-
-    var map = {"103" :"Verse", "31":"Chorus", "47": "Bridge", "107":"Pre Chorus", "55":"Intro"}
-    function drawCodes(topcodes) {
-      var ctx = document.querySelector("#video-canvas").getContext('2d');
-      ctx.fillStyle = "rgba(255, 0, 0, 0.3)";
-      initPosx = [0, 0, 0, 0, 0];
-      for (i=0; i<topcodes.length; i++) {
-        ctx.beginPath();
-        ctx.arc(topcodes[i].x, topcodes[i].y, topcodes[i].radius, 0, Math.PI*2, true);
-        ctx.fill();
-        //console.log(topcodes[i].code);
-        
-        var d = document.getElementById('camera-button');
-        d.style.position = "absolute";      
-        
-
-        //get topcode position for relevant topcodes
-        getTopCodePositions(topcodes[i]);
-
-        //order the physical positions of the topcodes 
-        
-        //relocate images based on position of topcodes
-        // repositionImage(indexRealPos);
-
-        // displayInformationImage();
-
+        }
+        var indexRealPos = order();
+        console.log(indexRealPos);
       }
-      var indexRealPos = order();
-      console.log(indexRealPos);
-  }
 
-  //return topcode order (arrangement)
-  function order(){
-    var orderedRealPos = initPosx.slice();
-    console.log(initPosx);
-    // var test = initPosx;
-    orderedRealPos.sort();
-    console.log(orderedRealPos);
+      //return topcode order (arrangement)
+      function order() {
+        var orderedRealPos = initPosx.slice();
+        console.log(initPosx);
+        // var test = initPosx;
+        orderedRealPos.sort();
+        console.log(orderedRealPos);
 
-    var indexRealPos = ["", "", "", "", ""];
-    for(k = 0; k < 5; k++){
-      for (j = 0; j < 5; j++){
-        if (initPosx[j] != 0 && initPosx[j] == orderedRealPos[k]){
-          console.log(other_map[j]);
-          indexRealPos[k] = map[other_map[j]];
+        var indexRealPos = ["", "", "", "", ""];
+        for (k = 0; k < 5; k++) {
+          for (j = 0; j < 5; j++) {
+            if (initPosx[j] != 0 && initPosx[j] == orderedRealPos[k]) {
+              console.log(other_map[j]);
+              indexRealPos[k] = map[other_map[j]];
+            }
+          }
+        }
+
+        // test.sort();
+        // console.log(test);
+
+        return indexRealPos;
+      }
+
+
+
+      function getTopCodePositions(topCode) {
+        switch (topCode.code) {
+          case 55:
+            initPosx[0] = topCode.x;
+            // console.log("The position of Topcode 55 in x-axis " + topCode.x);
+            // Images[0].style.visibility = 'visible';          
+            break;
+          case 107:
+            initPosx[1] = topCode.x;
+            // console.log("The position of Topcode 107 in x-axis " + topCode.x);
+
+            // Images[1].style.visibility = 'visible';          
+            break;
+          case 31:
+            initPosx[2] = topCode.x;
+            // console.log("The position of Topcode 31 in x-axis " + topCode.x);
+            // Images[2].style.visibility = 'visible';          
+            break;
+          case 47:
+            initPosx[3] = topCode.x;
+            // console.log("The position of Topcode 47 in x-axis " + topCode.x);
+            // Images[3].style.visibility = 'visible';          
+            break;
+          case 103:
+            initPosx[4] = topCode.x;
+            // console.log("The position of Topcode 103 in x-axis " + topCode.x);
+            // Images[4].style.visibility = 'visible';          
+            break;
         }
       }
-    }
-
-    // test.sort();
-    // console.log(test);
-
-    return indexRealPos;
-  }
 
 
-
-  function getTopCodePositions(topCode){
-      switch (topCode.code){
-        case 55:
-          initPosx[0] = topCode.x;
-          // console.log("The position of Topcode 55 in x-axis " + topCode.x);
-          // Images[0].style.visibility = 'visible';          
-          break;
-        case 107:
-          initPosx[1] = topCode.x;
-          // console.log("The position of Topcode 107 in x-axis " + topCode.x);
-
-          // Images[1].style.visibility = 'visible';          
-          break;
-        case 31:
-          initPosx[2] = topCode.x;
-          // console.log("The position of Topcode 31 in x-axis " + topCode.x);
-          // Images[2].style.visibility = 'visible';          
-          break;
-        case 47:
-          initPosx[3] = topCode.x;
-          // console.log("The position of Topcode 47 in x-axis " + topCode.x);
-          // Images[3].style.visibility = 'visible';          
-          break;
-        case 103:
-          initPosx[4] = topCode.x;
-          // console.log("The position of Topcode 103 in x-axis " + topCode.x);
-          // Images[4].style.visibility = 'visible';          
-          break;      
-        }
-  }
-
-
-  </script>
-  <!-- <div>
+    </script>
+    <!-- <div>
     <div float="left">
       <img id="firstimage" src="image_above.png" alt="Above Average Temperature" >
       <p class="text1" p style="font-size:24px" left="50px" id="ExplainText">100,000 years ago ............ 90,000 .................... 80,000 ..................... 70,000 ............. 60,000 years ago</p>
@@ -323,7 +329,7 @@
 </script> -->
 
 
-</div>
-       
-    </body>
+  </div>
+</body>
+
 </html>
